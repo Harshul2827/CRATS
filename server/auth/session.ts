@@ -7,7 +7,12 @@ export const SESSION_HOURS = 8
 // Only used when SESSION_SECRET is not set (local demo). Set SESSION_SECRET in .env.local to override.
 const DEV_SECRET = 'crats-dev-secret-change-me-before-sharing-this-app'
 
+let warned = false
 function key() {
+  if (!process.env.SESSION_SECRET && process.env.NODE_ENV === 'production' && !warned) {
+    warned = true
+    console.warn('SESSION_SECRET is not set: using the built-in demo secret. Set it in .env.local before sharing this app.')
+  }
   return new TextEncoder().encode(process.env.SESSION_SECRET || DEV_SECRET)
 }
 

@@ -54,7 +54,8 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <AppProviders demoMode={isDemoMode()}>{children}</AppProviders>
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        {/* The insights script only exists on Vercel; elsewhere it would 404 in the console. */}
+        {process.env.VERCEL === '1' && <Analytics />}
       </body>
     </html>
   )
