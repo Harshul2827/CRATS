@@ -15,6 +15,6 @@ export const POST = route(async (request: Request) => {
   const db = getDb()
   const user = authenticate(db, email, password)
   const response = json(describeUser(db, user))
-  response.cookies.set(SESSION_COOKIE, await signSession({ userId: user.id, role: user.role }), sessionCookieOptions)
+  response.cookies.set(SESSION_COOKIE, await signSession({ userId: user.id, role: user.role }), sessionCookieOptions(request))
   return response
 })

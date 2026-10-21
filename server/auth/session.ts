@@ -37,12 +37,19 @@ export async function verifySession(token: string | undefined): Promise<SessionC
   }
 }
 
-export const sessionCookieOptions = {
-  httpOnly: true,
-  sameSite: 'lax' as const,
-  path: '/',
-  secure: process.env.NODE_ENV === 'production',
-  maxAge: SESSION_HOURS * 60 * 60,
+/**
+ * Cookie settings. `Secure` is only set when the request really arrived over HTTPS (directly or via a proxy),
+ * so the demo also works over plain http on a LAN address, while a real HTTPS deployment is protected.
+ */
+export function sessionCookieOptions(request: Request) {
+  const proto = request.headers.get('x-forwarded-proto') ?? new URL(request.url).protocol.replace(':', '')
+  return {
+    httpOnly: true,
+    sameSite: 'lax' as const,
+    path: '/',
+    secure: proto === 'https',
+    maxAge: SESSION_HOURS * 60 * 60,
+  }
 }
 
 /** Reads one cookie from a raw Cookie header (works for any Request, including in tests). */

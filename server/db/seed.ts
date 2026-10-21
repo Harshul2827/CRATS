@@ -19,6 +19,9 @@ function mulberry32(seed: number) {
   }
 }
 
+/** All stored timestamps are UTC ISO strings so they sort correctly as text. */
+const utc = (value: string) => new Date(value).toISOString()
+
 const DEPARTMENTS = [
   { name: 'Computer Engineering', code: 'CE' },
   { name: 'Information Technology', code: 'IT' },
@@ -267,8 +270,9 @@ export function seedDatabase(db: DB) {
           company_id: companyIds[d.company], created_by: d.by, title: d.title, description: d.description,
           job_type: d.type, ctc_text: d.ctcText, ctc_value: d.ctc, location: d.location, work_mode: d.mode,
           openings: d.openings, deadline: d.deadline, status: d.status, rejection_reason: d.rejection ?? null,
-          reference_id: d.ref, created_at: d.createdAt, updated_at: d.updatedAt ?? d.submittedAt ?? d.createdAt,
-          submitted_at: d.submittedAt ?? null, approved_by: d.approvedAt ? tpoId : null, approved_at: d.approvedAt ?? null,
+          reference_id: d.ref, created_at: utc(d.createdAt), updated_at: utc(d.updatedAt ?? d.submittedAt ?? d.createdAt),
+          submitted_at: d.submittedAt ? utc(d.submittedAt) : null, approved_by: d.approvedAt ? tpoId : null,
+          approved_at: d.approvedAt ? utc(d.approvedAt) : null,
         }).lastInsertRowid,
       )
       insertCriteria.run({
@@ -398,7 +402,7 @@ export function seedDatabase(db: DB) {
     const acceptedOffers: { drive: number; ctc: number; daysAgo: number }[] = [
       { drive: p1, ctc: 11, daysAgo: 82 }, { drive: p2, ctc: 9.5, daysAgo: 79 }, { drive: p1, ctc: 12, daysAgo: 71 },
       { drive: p3, ctc: 10.5, daysAgo: 63 }, { drive: p2, ctc: 10, daysAgo: 62 }, { drive: p1, ctc: 10, daysAgo: 50 },
-      { drive: p4, ctc: 8.5, daysAgo: 45 }, { drive: p3, ctc: 11, daysAgo: 44 }, { drive: p2, ctc: 9, daysAgo: 33 },
+      { drive: p4, ctc: 8.5, daysAgo: 45 }, { drive: p3, ctc: 11, daysAgo: 44 }, { drive: p2, ctc: 11, daysAgo: 27 },
       { drive: p5, ctc: 9.5, daysAgo: 26 }, { drive: p1, ctc: 13, daysAgo: 12 }, { drive: p6, ctc: 7.5, daysAgo: 5 },
     ]
     const pastDrives = [p1, p2, p3, p4, p5, p6]

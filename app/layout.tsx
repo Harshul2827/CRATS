@@ -1,6 +1,8 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { AppProviders } from '@/components/app/providers'
+import { isDemoMode } from '@/server/lib/env'
 
 export const metadata: Metadata = {
   title: 'CRATS • SPIT Mumbai',
@@ -33,15 +35,25 @@ export const viewport: Viewport = {
   ],
 }
 
+// Runs before first paint so the saved theme never flashes. The `dark` class lives on <html>
+// so dialogs and popovers (rendered in portals) are themed too.
+const themeScript = `try{var t=localStorage.getItem('crats-theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d)}catch(e){}`
+
+// Read at request time so DEMO_MODE changes apply without a rebuild.
+export const dynamic = 'force-dynamic'
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="antialiased">
-        {children}
+        <AppProviders demoMode={isDemoMode()}>{children}</AppProviders>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
