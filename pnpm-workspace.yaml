@@ -3,3 +3,7 @@ pmOnFail: ignore
 minimumReleaseAgeExclude:
   - '@next/*'
   - next
+
+allowBuilds:
+  better-sqlite3: false # v13 ships prebuilt binaries (prebuilds/); no compiler or build script needed
+  esbuild: false # binary comes from the @esbuild/<platform> package; its install script only re-verifies it
